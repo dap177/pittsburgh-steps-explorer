@@ -1,0 +1,18 @@
+runtime: python39 # Or python38, python310, etc., depending on your preference
+entrypoint: gunicorn -b :$PORT app:app
+
+# Optional: Set environment variables here, BUT DO NOT COMMIT YOUR API KEY HERE
+# env_variables:
+#  EXAMPLE_VAR: 'example_value'
+
+# Optional: Instance class (controls resources like CPU/memory)
+# instance_class: F1 # F1 is the smallest/cheapest, suitable for low traffic
+
+handlers:
+# Route static assets handled by Google's infrastructure
+- url: /static
+  static_dir: static
+
+# Route all other requests to the Flask app
+- url: /.*
+  script: auto

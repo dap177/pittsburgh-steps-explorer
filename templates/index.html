@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Pittsburgh Steps Explorer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+        #map {
+            height: 100%;
+            width: 100%;
+        }
+        #loading-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            font-weight: bold;
+            display: none;
+        }
+        #error-message {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: rgba(255, 0, 0, 0.1);
+            color: red;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            font-weight: bold;
+            display: none;
+        }
+        .controls {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1000;
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+        }
+        .legend {
+            position: absolute;
+            bottom: 30px;
+            right: 10px;
+            background-color: white;
+            padding: 10px;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            margin-right: 8px;
+            border-radius: 50%;
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 0;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 1000px;
+            height: 80%;
+            overflow: hidden;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+        
+        .modal-container {
+            display: flex;
+            height: 100%;
+        }
+        
+        .modal-details {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .modal-street-view {
+            flex: 1;
+            height: 100%;
+        }
+        
+        .modal-close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            position: absolute;
+            right: 20px;
+            top: 10px;
+            z-index: 2001;
+        }
+        
+        .modal-close:hover,
+        .modal-close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: #555;
+        }
+        
+        h1 {
+            color: #0066cc;
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="error-message"></div>
+    <div id="loading-message">Loading steps data...</div>
+
+    <div class="controls">
+        <div>
+            <input type="checkbox" id="show-pictures-only">
+            <label for="show-pictures-only">Show only steps with pictures</label>
+        </div>
+    </div>
+
+    <div class="legend">
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #4285F4;"></div>
+            <span>Steps without pictures</span>
+        </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #EA4335;"></div>
+            <span>Steps with pictures</span>
+        </div>
+    </div>
+
+    <div id="map"></div>
+    
+    <!-- Modal for step details -->
+    <div id="details-modal" class="modal">
+        <span class="modal-close">&times;</span>
+        <div class="modal-content">
+            <div class="modal-container">
+                <div id="modal-details" class="modal-details">
+                    <!-- Step details will be loaded here -->
+                </div>
+                <div id="modal-street-view" class="modal-street-view">
+                    <!-- Street View will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let map;
+        let markers = [];
+        let steps = [];
+        let currentInfoWindow = null;
+        let streetViewService;
+        let panorama;
+        const modal = document.getElementById('details-modal');
+        const modalClose = document.querySelector('.modal-close');
+        
+        // Close the modal when clicking the X
+        modalClose.addEventListener('click', function() {
+            modal.style.display = 'none';
+        });
+        
+        // Close the modal when clicking outside of it
+        window.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Show/hide loading message
+        function showLoading(show) {
+            document.getElementById('loading-message').style.display = show ? 'block' : 'none';
+        }
+
+        // Show error message
+        function showError(message) {
+            console.error(message);
+            const errorElement = document.getElementById('error-message');
+            errorElement.innerText = message;
+            errorElement.style.display = 'block';
+            
+            // Hide after 5 seconds
+            setTimeout(() => {
+                errorElement.style.display = 'none';
+            }, 5000);
+        }
+
+        // Load steps data from API
+        async function loadStepsData() {
+            try {
+                showLoading(true);
+                const response = await fetch('/api/steps');
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                steps = await response.json();
+                console.log(`Loaded ${steps.length} steps`);
+                
+                // Create markers for all steps
+                createMarkers();
+                
+                showLoading(false);
+            } catch (error) {
+                showError('Failed to load steps data: ' + error.message);
+                showLoading(false);
+            }
+        }
+        
+        // Create marker icon
+        function createStepsIcon(hasPicture) {
+            const fillColor = hasPicture ? '#EA4335' : '#4285F4';
+            return {
+                path: 'M-10,-10 L-10,10 L-7,10 L-7,-7 L7,-7 L7,10 L10,10 L10,-10 Z',
+                fillColor: fillColor,
+                fillOpacity: 1,
+                strokeWeight: 2,
+                strokeColor: '#FFFFFF',
+                scale: 1.2,
+                anchor: new google.maps.Point(0, 0)
+            };
+        }
+        
+        // Create markers for all steps
+        function createMarkers() {
+            // Clear existing markers
+            markers.forEach(marker => marker.setMap(null));
+            markers = [];
+            
+            // Create a marker for each step
+            steps.forEach(step => {
+                const marker = new google.maps.Marker({
+                    position: { lat: step.latitude, lng: step.longitude },
+                    map: map,
+                    title: step.location || 'Pittsburgh Step',
+                    icon: createStepsIcon(step.has_picture)
+                });
+                
+                // Store step data with marker
+                marker.stepData = step;
+                
+                // Create info window content
+                const content = `
+                    <div style="max-width: 300px;">
+                        <h3 style="margin-top: 5px; margin-bottom: 10px; color: #0066cc;">${step.location || 'Pittsburgh Step'}</h3>
+                        <p><b>From:</b> ${step.from_street || 'N/A'}</p>
+                        <p><b>To:</b> ${step.to_street || 'N/A'}</p>
+                        <p><b>Steps:</b> ${step.steps_count || 'N/A'}</p>
+                        <p><b>Length:</b> ${step.length_feet || 'N/A'} feet</p>
+                        <button onclick="openDetailsModal(${step.id})" 
+                                style="margin-top: 10px; padding: 5px 10px; background-color: #0066cc; color: white; 
+                                border: none; border-radius: 4px; cursor: pointer;">
+                            View Details & Street View
+                        </button>
+                    </div>
+                `;
+                
+                // Create info window
+                const infoWindow = new google.maps.InfoWindow({
+                    content: content,
+                    maxWidth: 300
+                });
+                
+                // Add click event
+                marker.addListener('click', () => {
+                    if (currentInfoWindow) {
+                        currentInfoWindow.close();
+                    }
+                    infoWindow.open(map, marker);
+                    currentInfoWindow = infoWindow;
+                });
+                
+                // Add to markers array
+                markers.push(marker);
+            });
+            
+            // Apply initial filter
+            filterMarkers();
+            console.log(`Added ${markers.length} markers to map`);
+        }
+        
+        // Filter markers based on checkbox
+        function filterMarkers() {
+            const showPicturesOnly = document.getElementById('show-pictures-only').checked;
+            
+            markers.forEach(marker => {
+                if (showPicturesOnly && !marker.stepData.has_picture) {
+                    marker.setMap(null);
+                } else {
+                    marker.setMap(map);
+                }
+            });
+        }
+        
+        // Open details modal
+        function openDetailsModal(stepId) {
+            const step = steps.find(s => s.id == stepId);
+            if (!step) {
+                showError('Step not found!');
+                return;
+            }
+            
+            // Show the modal
+            modal.style.display = 'block';
+            
+            // Populate step details
+            document.getElementById('modal-details').innerHTML = `
+                <h1>${step.location || 'Pittsburgh Step'}</h1>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Neighborhood:</div>
+                    <div>${step.neighborhood || 'Unknown'}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">From Street:</div>
+                    <div>${step.from_street || 'Unknown'}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">To Street:</div>
+                    <div>${step.to_street || 'Unknown'}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Number of Steps:</div>
+                    <div>${step.steps_count || 'Unknown'}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Length:</div>
+                    <div>${step.length_feet || 'Unknown'} feet</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Coordinates:</div>
+                    <div>Latitude: ${step.latitude.toFixed(6)}, Longitude: ${step.longitude.toFixed(6)}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Image:</div>
+                    ${step.has_picture 
+                        ? `<img src="${step.image_url}" alt="Step Image" style="max-width: 100%; border-radius: 4px; margin-top: 10px;">`
+                        : `<div style="background-color: #eee; color: #777; padding: 20px; text-align: center;">No image available</div>`
+                    }
+                </div>
+            `;
+            
+            // Initialize Street View
+            try {
+                if (!panorama) {
+                    panorama = new google.maps.StreetViewPanorama(
+                        document.getElementById('modal-street-view'),
+                        {
+                            position: { lat: step.latitude, lng: step.longitude },
+                            pov: { heading: 0, pitch: 0 },
+                            zoom: 1
+                        }
+                    );
+                } else {
+                    panorama.setPosition({ lat: step.latitude, lng: step.longitude });
+                }
+                
+                // Check if Street View is available at this location
+                if (!streetViewService) {
+                    streetViewService = new google.maps.StreetViewService();
+                }
+                
+                streetViewService.getPanorama(
+                    { location: { lat: step.latitude, lng: step.longitude }, radius: 50 },
+                    (data, status) => {
+                        if (status !== 'OK') {
+                            document.getElementById('modal-street-view').innerHTML = 
+                                '<div style="padding: 20px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5;">' +
+                                    '<p>Street View not available for this location</p>' +
+                                '</div>';
+                        }
+                    }
+                );
+            } catch (error) {
+                console.error('Street View error:', error);
+                document.getElementById('modal-street-view').innerHTML = 
+                    '<div style="padding: 20px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5;">' +
+                        '<p>Error loading Street View: ' + error.message + '</p>' +
+                    '</div>';
+            }
+        }
+        
+        // Initialize the map
+        function initMap() {
+            console.log('Map initialization started');
+            
+            try {
+                // Create a map centered on Pittsburgh
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 40.4406, lng: -79.9959 },
+                    zoom: 13
+                });
+                
+                // Load steps data
+                loadStepsData();
+                
+                // Add event listener for the checkbox
+                document.getElementById('show-pictures-only').addEventListener('change', filterMarkers);
+                
+                console.log('Map initialized successfully');
+            } catch (error) {
+                showError('Error initializing map: ' + error.message);
+                console.error('Map initialization error:', error);
+                showLoading(false);
+            }
+        }
+        
+        // Load Google Maps API
+        function loadGoogleMapsScript() {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&loading=async`;
+            script.async = true;
+            script.defer = true;
+            script.onerror = () => showError('Failed to load Google Maps API');
+            document.head.appendChild(script);
+        }
+        
+        // Initialize when the page loads
+        window.onload = loadGoogleMapsScript;
+    </script>
+</body>
+</html>
