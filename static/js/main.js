@@ -29,28 +29,23 @@ async function initMap() {
         for (const step of steps) {
             const position = { lat: step.latitude, lng: step.longitude };
             
-            // Define the custom icon (blue circle)
+            // Define the custom icon (steps inside a circle)
             const stepIcon = {
-                path: google.maps.SymbolPath.CIRCLE,
+                path: 'M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z M-6,-3 L-6,-1 L-2,-1 L-2,1 L2,1 L2,3 L6,3 L6,5',
                 fillColor: '#4285F4', // Google Blue
                 fillOpacity: 1,
                 strokeColor: '#ffffff', // White border
-                strokeWeight: 1,
-                scale: 8 // Adjust size as needed
+                strokeWeight: 1.5,
+                scale: 1, // Scaled to appropriate size
+                anchor: new google.maps.Point(0, 0)
             };
 
-            // Use standard Marker with custom icon and label
+            // Use standard Marker with custom icon (no label needed now)
             const marker = new google.maps.Marker({
                 position,
                 map,
                 title: step.name,
-                icon: stepIcon, // Use the custom circle icon
-                label: {
-                  text: "S", // Add the 'S' label
-                  color: "#ffffff", // White text
-                  fontSize: "10px",
-                  fontWeight: "bold"
-                }
+                icon: stepIcon // Use the custom steps icon
             });
 
             marker.addListener("click", async () => {
