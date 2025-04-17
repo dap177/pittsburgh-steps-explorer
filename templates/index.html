@@ -10,9 +10,11 @@
             margin: 0;
             padding: 0;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
         }
         #map {
-            height: 100%;
+            flex-grow: 1;
             width: 100%;
         }
         #loading-message {
@@ -51,16 +53,49 @@
             padding: 10px;
             border-radius: 4px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            max-width: 350px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .controls-toggle {
+            display: none;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            z-index: 1001;
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            padding: 8px 12px;
+            cursor: pointer;
+        }
+        .controls h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+        .filter-group {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .filter-group:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        .filter-title {
+            font-weight: bold;
+            margin-bottom: 8px;
         }
         .legend {
             position: absolute;
             bottom: 30px;
-            right: 10px;
+            left: 10px;
+            z-index: 1000;
             background-color: white;
             padding: 10px;
             border-radius: 4px;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-            z-index: 1000;
         }
         .legend-item {
             display: flex;
@@ -70,11 +105,10 @@
         .legend-color {
             width: 20px;
             height: 20px;
-            margin-right: 8px;
             border-radius: 50%;
+            margin-right: 8px;
+            border: 1px solid #ddd;
         }
-        
-        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -83,78 +117,187 @@
             top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0,0,0,0.7);
+            background-color: rgba(0, 0, 0, 0.7);
         }
-        
         .modal-content {
             background-color: white;
-            margin: 5% auto;
-            padding: 0;
-            border-radius: 8px;
+            margin: 10% auto;
             width: 90%;
-            max-width: 1000px;
-            height: 80%;
+            max-width: 900px;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        
         .modal-container {
             display: flex;
-            height: 100%;
+            flex-direction: column;
         }
-        
         .modal-details {
-            flex: 1;
             padding: 20px;
+            max-height: 50vh;
             overflow-y: auto;
         }
-        
         .modal-street-view {
-            flex: 1;
-            height: 100%;
+            height: 40vh;
+            min-height: 300px;
+            border-top: 1px solid #ddd;
         }
-        
         .modal-close {
-            color: #aaa;
+            color: #777;
             float: right;
-            font-size: 28px;
+            font-size: 30px;
             font-weight: bold;
             position: absolute;
             right: 20px;
             top: 10px;
             z-index: 2001;
         }
-        
-        .modal-close:hover,
-        .modal-close:focus {
-            color: black;
+        .modal-close:hover {
+            color: #000;
             text-decoration: none;
             cursor: pointer;
         }
-        
         .detail-item {
-            margin-bottom: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
         }
-        
         .detail-label {
             font-weight: bold;
-            color: #555;
+            width: 120px;
+            margin-right: 10px;
+        }
+        .rating-stars {
+            display: inline-block;
+            margin-top: 5px;
+        }
+        .rating-stars i {
+            color: #ffd700;
+            margin-right: 2px;
+        }
+        .nearest-button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nearest-button:hover {
+            background-color: #3367d6;
+        }
+        .nearest-button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .nearest-button i {
+            margin-right: 5px;
+        }
+        .range-slider {
+            width: 100%;
+            margin: 10px 0;
+        }
+        .slider-values {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #666;
         }
         
-        h1 {
-            color: #0066cc;
-            margin-top: 0;
+        /* Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .controls {
+                display: none;
+                width: 80%;
+                max-width: none;
+            }
+            .controls.active {
+                display: block;
+            }
+            .controls-toggle {
+                display: block;
+            }
+            .modal-content {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                max-width: none;
+                border-radius: 0;
+            }
+            .modal-container {
+                height: 100%;
+            }
+            .modal-details {
+                flex: 1;
+                max-height: none;
+            }
+            .detail-label {
+                width: 100%;
+                margin-bottom: 4px;
+            }
+            .legend {
+                bottom: 20px;
+            }
         }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 <body>
     <div id="error-message"></div>
     <div id="loading-message">Loading steps data...</div>
 
-    <div class="controls">
-        <div>
-            <input type="checkbox" id="show-pictures-only">
-            <label for="show-pictures-only">Show only steps with pictures</label>
+    <button id="controls-toggle" class="controls-toggle">
+        <i class="fas fa-filter"></i> Filters
+    </button>
+
+    <div class="controls" id="controls-panel">
+        <h3>Pittsburgh Steps Explorer</h3>
+        
+        <div class="filter-group">
+            <div class="filter-title">Steps Photos</div>
+            <div>
+                <input type="checkbox" id="show-pictures-only">
+                <label for="show-pictures-only">Show only steps with photos</label>
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <div class="filter-title">Number of Steps</div>
+            <input type="range" id="steps-range" class="range-slider" min="0" max="200" value="200">
+            <div class="slider-values">
+                <span>0</span>
+                <span id="steps-value">200+</span>
+            </div>
+            <div>
+                <small>Showing steps with up to <span id="steps-display">200+</span> steps</small>
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <div class="filter-title">Neighborhood</div>
+            <select id="neighborhood-filter">
+                <option value="all">All Neighborhoods</option>
+                <!-- Neighborhoods will be populated dynamically -->
+            </select>
+        </div>
+        
+        <div class="filter-group">
+            <div class="filter-title">Features</div>
+            <div>
+                <input type="checkbox" id="enable-clustering">
+                <label for="enable-clustering">Group nearby steps</label>
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <button id="find-nearest" class="nearest-button" disabled>
+                <i class="fas fa-location-arrow"></i> Find Steps Near Me
+            </button>
+            <div id="location-status" style="font-size: 12px; margin-top: 5px; color: #666;"></div>
         </div>
     </div>
 
@@ -191,11 +334,16 @@
         let map;
         let markers = [];
         let steps = [];
+        let markerClusterer = null;
         let currentInfoWindow = null;
         let streetViewService;
         let panorama;
+        let userLocationMarker = null;
+        let neighborhoods = new Set();
         const modal = document.getElementById('details-modal');
         const modalClose = document.querySelector('.modal-close');
+        const controlsToggle = document.getElementById('controls-toggle');
+        const controlsPanel = document.getElementById('controls-panel');
         
         // Close the modal when clicking the X
         modalClose.addEventListener('click', function() {
@@ -208,6 +356,48 @@
                 modal.style.display = 'none';
             }
         });
+        
+        // Toggle controls panel on mobile
+        controlsToggle.addEventListener('click', function() {
+            controlsPanel.classList.toggle('active');
+        });
+        
+        // Initialize filter event listeners
+        function initFilters() {
+            // Steps range slider
+            const stepsRange = document.getElementById('steps-range');
+            const stepsValue = document.getElementById('steps-value');
+            const stepsDisplay = document.getElementById('steps-display');
+            
+            stepsRange.addEventListener('input', function() {
+                const value = parseInt(this.value);
+                stepsValue.textContent = value === 200 ? '200+' : value;
+                stepsDisplay.textContent = value === 200 ? '200+' : value;
+                filterMarkers();
+            });
+            
+            // Neighborhood filter
+            document.getElementById('neighborhood-filter').addEventListener('change', filterMarkers);
+            
+            // Photos filter
+            document.getElementById('show-pictures-only').addEventListener('change', filterMarkers);
+            
+            // Clustering toggle
+            document.getElementById('enable-clustering').addEventListener('change', function() {
+                toggleClustering(this.checked);
+            });
+            
+            // Find nearest steps button
+            document.getElementById('find-nearest').addEventListener('click', findNearestSteps);
+            
+            // Check if geolocation is available
+            if (navigator.geolocation) {
+                document.getElementById('find-nearest').disabled = false;
+                document.getElementById('location-status').textContent = 'Location access available';
+            } else {
+                document.getElementById('location-status').textContent = 'Location access not available';
+            }
+        }
 
         // Show/hide loading message
         function showLoading(show) {
@@ -239,6 +429,22 @@
                 steps = await response.json();
                 console.log(`Loaded ${steps.length} steps`);
                 
+                // Extract neighborhoods
+                steps.forEach(step => {
+                    if (step.neighborhood && step.neighborhood.trim() !== '') {
+                        neighborhoods.add(step.neighborhood);
+                    }
+                });
+                
+                // Populate neighborhood dropdown
+                const neighborhoodSelect = document.getElementById('neighborhood-filter');
+                Array.from(neighborhoods).sort().forEach(hood => {
+                    const option = document.createElement('option');
+                    option.value = hood;
+                    option.textContent = hood;
+                    neighborhoodSelect.appendChild(option);
+                });
+                
                 // Create markers for all steps
                 createMarkers();
                 
@@ -253,12 +459,12 @@
         function createStepsIcon(hasPicture) {
             const fillColor = hasPicture ? '#EA4335' : '#4285F4';
             return {
-                path: 'M-10,-10 L-10,10 L-7,10 L-7,-7 L7,-7 L7,10 L10,10 L10,-10 Z',
+                path: 'M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z M-6,-3 L-6,-1 L-2,-1 L-2,1 L2,1 L2,3 L6,3 L6,5',
                 fillColor: fillColor,
                 fillOpacity: 1,
-                strokeWeight: 2,
-                strokeColor: '#FFFFFF',
-                scale: 1.2,
+                strokeColor: '#ffffff',
+                strokeWeight: 1.5,
+                scale: 1,
                 anchor: new google.maps.Point(0, 0)
             };
         }
@@ -321,17 +527,195 @@
             console.log(`Added ${markers.length} markers to map`);
         }
         
-        // Filter markers based on checkbox
+        // Toggle marker clustering
+        function toggleClustering(enable) {
+            // Clear existing clusterer if it exists
+            if (markerClusterer) {
+                markerClusterer.clearMarkers();
+                markerClusterer = null;
+            }
+            
+            // Apply filtering first
+            filterMarkers();
+            
+            // Create new clusterer if enabled
+            if (enable) {
+                // Get only visible markers
+                const visibleMarkers = markers.filter(m => m.getMap() !== null);
+                
+                // Create clusterer
+                markerClusterer = new MarkerClusterer(map, visibleMarkers, {
+                    imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+                    maxZoom: 15,
+                    gridSize: 50
+                });
+            }
+        }
+        
+        // Filter markers based on user selections
         function filterMarkers() {
             const showPicturesOnly = document.getElementById('show-pictures-only').checked;
+            const maxSteps = parseInt(document.getElementById('steps-range').value);
+            const selectedNeighborhood = document.getElementById('neighborhood-filter').value;
+            const clusteringEnabled = document.getElementById('enable-clustering').checked;
+            
+            // Clear existing clusterer if it exists
+            if (markerClusterer) {
+                markerClusterer.clearMarkers();
+                markerClusterer = null;
+            }
             
             markers.forEach(marker => {
-                if (showPicturesOnly && !marker.stepData.has_picture) {
-                    marker.setMap(null);
-                } else {
-                    marker.setMap(map);
+                const stepData = marker.stepData;
+                let visible = true;
+                
+                // Filter by photos
+                if (showPicturesOnly && !stepData.has_picture) {
+                    visible = false;
                 }
+                
+                // Filter by steps count
+                if (maxSteps < 200 && stepData.steps_count > maxSteps) {
+                    visible = false;
+                }
+                
+                // Filter by neighborhood
+                if (selectedNeighborhood !== 'all' && stepData.neighborhood !== selectedNeighborhood) {
+                    visible = false;
+                }
+                
+                // Set marker visibility
+                marker.setMap(visible ? map : null);
             });
+            
+            // Re-apply clustering if enabled
+            if (clusteringEnabled) {
+                // Get only visible markers
+                const visibleMarkers = markers.filter(m => m.getMap() !== null);
+                
+                // Create clusterer
+                markerClusterer = new MarkerClusterer(map, visibleMarkers, {
+                    imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
+                    maxZoom: 15,
+                    gridSize: 50
+                });
+            }
+        }
+        
+        // Find steps nearest to user's location
+        function findNearestSteps() {
+            const locationStatus = document.getElementById('location-status');
+            locationStatus.textContent = 'Requesting your location...';
+            
+            navigator.geolocation.getCurrentPosition(
+                // Success callback
+                function(position) {
+                    locationStatus.textContent = 'Location found!';
+                    
+                    const userLat = position.coords.latitude;
+                    const userLng = position.coords.longitude;
+                    const userLocation = new google.maps.LatLng(userLat, userLng);
+                    
+                    // Add or update user location marker
+                    if (userLocationMarker) {
+                        userLocationMarker.setPosition(userLocation);
+                    } else {
+                        userLocationMarker = new google.maps.Marker({
+                            position: userLocation,
+                            map: map,
+                            title: 'Your Location',
+                            icon: {
+                                path: google.maps.SymbolPath.CIRCLE,
+                                fillColor: '#4285F4',
+                                fillOpacity: 1,
+                                strokeColor: '#ffffff',
+                                strokeWeight: 2,
+                                scale: 7
+                            },
+                            zIndex: 1000
+                        });
+                    }
+                    
+                    // Calculate distances to all steps
+                    let nearbySteps = steps.map(step => {
+                        const stepLocation = new google.maps.LatLng(step.latitude, step.longitude);
+                        const distance = google.maps.geometry.spherical.computeDistanceBetween(userLocation, stepLocation);
+                        return { ...step, distance };
+                    });
+                    
+                    // Sort by distance
+                    nearbySteps.sort((a, b) => a.distance - b.distance);
+                    
+                    // Take the closest 5
+                    nearbySteps = nearbySteps.slice(0, 5);
+                    
+                    // Adjust map to show user and nearby steps
+                    const bounds = new google.maps.LatLngBounds();
+                    bounds.extend(userLocation);
+                    
+                    // Find markers for nearby steps and extend bounds
+                    const nearbyMarkers = markers.filter(marker => 
+                        nearbySteps.some(step => step.id === marker.stepData.id)
+                    );
+                    
+                    nearbyMarkers.forEach(marker => {
+                        bounds.extend(marker.getPosition());
+                        // Ensure marker is visible (in case it was filtered out)
+                        marker.setMap(map);
+                    });
+                    
+                    // Fit map to show all nearby steps
+                    map.fitBounds(bounds);
+                    
+                    // Create info text about nearby steps
+                    const nearestInfo = nearbySteps.map((step, index) => {
+                        const distanceInMiles = (step.distance * 0.000621371).toFixed(2);
+                        return `<p><b>${index + 1}.</b> <a href="#" onclick="openDetailsModal(${step.id}); return false;">${step.location || 'Pittsburgh Step'}</a> - ${distanceInMiles} miles</p>`;
+                    }).join('');
+                    
+                    // Show info window for user location with nearby steps
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: `
+                            <div style="max-width: 300px;">
+                                <h3 style="margin-top: 5px; margin-bottom: 10px; color: #0066cc;">Your Location</h3>
+                                <p>Closest steps to you:</p>
+                                ${nearestInfo}
+                            </div>
+                        `,
+                        maxWidth: 300
+                    });
+                    
+                    if (currentInfoWindow) {
+                        currentInfoWindow.close();
+                    }
+                    infoWindow.open(map, userLocationMarker);
+                    currentInfoWindow = infoWindow;
+                },
+                // Error callback
+                function(error) {
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            locationStatus.textContent = 'Location access denied';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            locationStatus.textContent = 'Location information unavailable';
+                            break;
+                        case error.TIMEOUT:
+                            locationStatus.textContent = 'Location request timed out';
+                            break;
+                        default:
+                            locationStatus.textContent = 'Unknown location error';
+                            break;
+                    }
+                    showError('Could not get your location: ' + error.message);
+                },
+                // Options
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
         }
         
         // Open details modal
@@ -345,9 +729,22 @@
             // Show the modal
             modal.style.display = 'block';
             
+            // Calculate difficulty rating (1-5 stars) based on steps count
+            let difficultyStars = '';
+            const stepsCount = step.steps_count || 0;
+            const difficulty = Math.min(5, Math.max(1, Math.ceil(stepsCount / 40)));
+            
+            for (let i = 0; i < 5; i++) {
+                if (i < difficulty) {
+                    difficultyStars += '<i class="fas fa-star"></i>';
+                } else {
+                    difficultyStars += '<i class="far fa-star"></i>';
+                }
+            }
+            
             // Populate step details
             document.getElementById('modal-details').innerHTML = `
-                <h1>${step.location || 'Pittsburgh Step'}</h1>
+                <h1 style="color: #0066cc; margin-top: 0;">${step.location || 'Pittsburgh Step'}</h1>
                 
                 <div class="detail-item">
                     <div class="detail-label">Neighborhood:</div>
@@ -375,9 +772,30 @@
                 </div>
                 
                 <div class="detail-item">
+                    <div class="detail-label">Width:</div>
+                    <div>${step.width || 'Unknown'} feet</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Year Built:</div>
+                    <div>${step.year_built || 'Unknown'}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Difficulty:</div>
+                    <div class="rating-stars">${difficultyStars}</div>
+                </div>
+                
+                <div class="detail-item">
                     <div class="detail-label">Coordinates:</div>
                     <div>Latitude: ${step.latitude.toFixed(6)}, Longitude: ${step.longitude.toFixed(6)}</div>
                 </div>
+                
+                ${step.comment ? `
+                <div class="detail-item">
+                    <div class="detail-label">Comments:</div>
+                    <div>${step.comment}</div>
+                </div>` : ''}
                 
                 <div class="detail-item">
                     <div class="detail-label">Image:</div>
@@ -442,8 +860,8 @@
                 // Load steps data
                 loadStepsData();
                 
-                // Add event listener for the checkbox
-                document.getElementById('show-pictures-only').addEventListener('change', filterMarkers);
+                // Initialize filters
+                initFilters();
                 
                 console.log('Map initialized successfully');
             } catch (error) {
@@ -456,15 +874,24 @@
         // Load Google Maps API
         function loadGoogleMapsScript() {
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key={{ api_key }}&callback=initMap&loading=async`;
+            script.src = `https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=geometry&callback=initMap&loading=async`;
             script.async = true;
             script.defer = true;
             script.onerror = () => showError('Failed to load Google Maps API');
             document.head.appendChild(script);
+            
+            // Load MarkerClusterer library
+            const clusterScript = document.createElement('script');
+            clusterScript.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
+            clusterScript.async = true;
+            document.head.appendChild(clusterScript);
         }
         
         // Initialize when the page loads
         window.onload = loadGoogleMapsScript;
+        
+        // Make openDetailsModal available globally
+        window.openDetailsModal = openDetailsModal;
     </script>
 </body>
 </html>
