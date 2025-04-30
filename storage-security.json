@@ -1,0 +1,16 @@
+{
+  "bindings": [
+    {
+      "role": "roles/storage.objectViewer",
+      "members": [
+        "allUsers"
+      ]
+    },
+    {
+      "role": "roles/storage.objectAdmin",
+      "members": [
+        "serviceAccount:annular-ray-445804-r8@appspot.gserviceaccount.com"
+      ]
+    }
+  ]
+}

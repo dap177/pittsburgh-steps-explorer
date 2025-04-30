@@ -7,6 +7,8 @@ from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
 from dotenv import load_dotenv
 from google.cloud import storage
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 
 load_dotenv()
 
@@ -36,6 +38,15 @@ if app.config['USE_CLOUD_STORAGE']:
         storage_client = storage.Client()
     except Exception as e:
         logger.error(f"Error initializing Google Cloud Storage client: {e}")
+
+# Initialize rate limiter
+limiter = Limiter(
+    get_remote_address,
+    app=app,
+    default_limits=["200 per day", "50 per hour"],
+    storage_uri="memory://",
+    strategy="fixed-window"
+)
 
 # Function to check allowed file extensions
 def allowed_file(filename):
@@ -226,6 +237,7 @@ def serve_gcs_image(filename):
     return send_from_directory(os.path.join(app.static_folder, 'images', 'user_uploads'), filename)
 
 @app.route('/api/steps')
+@limiter.limit("60 per minute")
 def get_steps():
     try:
         logger.info("Loading steps data...")
@@ -241,6 +253,7 @@ def get_steps():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/steps/upload-photo', methods=['POST'])
+@limiter.limit("10 per hour")
 def upload_photo():
     try:
         # Check if step_id is provided
@@ -306,6 +319,7 @@ def upload_photo():
         return jsonify({"error": str(e)}), 500
 
 @app.route('/api/steps/add', methods=['POST'])
+@limiter.limit("5 per hour")
 def add_step():
     try:
         # Extract step data from form
