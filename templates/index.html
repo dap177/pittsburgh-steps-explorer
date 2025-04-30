@@ -44,6 +44,21 @@
             font-weight: bold;
             display: none;
         }
+        #success-message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(46, 204, 113, 0.9);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 9999;
+            font-weight: bold;
+            display: none;
+            text-align: center;
+        }
         .controls {
             position: absolute;
             top: 10px;
@@ -207,6 +222,118 @@
             font-size: 12px;
             color: #666;
         }
+        .action-button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            font-weight: bold;
+        }
+        .action-button:hover {
+            background-color: #3367d6;
+        }
+        .secondary-button {
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 5px;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .secondary-button:hover {
+            background-color: #e5e5e5;
+        }
+        .cancel-button {
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ccc;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .cancel-button:hover {
+            background-color: #e5e5e5;
+        }
+        .form-row {
+            margin-bottom: 15px;
+        }
+        .form-row label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .form-row input[type="text"],
+        .form-row input[type="number"],
+        .form-row select,
+        .form-row textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .coordinates-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .coordinates-container div {
+            flex: 1;
+        }
+        .coordinates-container label {
+            font-size: 12px;
+            font-weight: normal;
+        }
+        .modal-subtitle {
+            color: #666;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .map-picking {
+            cursor: crosshair !important;
+        }
+        .user-contributed-marker {
+            position: relative;
+        }
+        .user-contributed-marker::after {
+            content: '★';
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            color: gold;
+            font-size: 12px;
+            text-shadow: 0 0 2px black;
+        }
+        #add-photo-button {
+            background-color: #4285F4;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            display: inline-flex;
+            align-items: center;
+        }
+        #add-photo-button i {
+            margin-right: 5px;
+        }
         
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
@@ -249,6 +376,7 @@
 <body>
     <div id="error-message"></div>
     <div id="loading-message">Loading steps data...</div>
+    <div id="success-message"></div>
 
     <button id="controls-toggle" class="controls-toggle">
         <i class="fas fa-filter"></i> Filters
@@ -291,6 +419,16 @@
                 <input type="checkbox" id="enable-clustering">
                 <label for="enable-clustering">Group nearby steps</label>
             </div>
+            <div>
+                <input type="checkbox" id="show-user-submitted">
+                <label for="show-user-submitted">Show user-submitted steps</label>
+            </div>
+        </div>
+        
+        <div class="filter-group">
+            <button id="add-new-step" class="action-button">
+                <i class="fas fa-plus-circle"></i> Add New Steps
+            </button>
         </div>
         
         <div class="filter-group">
@@ -310,6 +448,10 @@
             <div class="legend-color" style="background-color: #EA4335;"></div>
             <span>Steps with pictures</span>
         </div>
+        <div class="legend-item">
+            <div class="legend-color" style="background-color: #FBBC05;"></div>
+            <span>User-submitted steps</span>
+        </div>
     </div>
 
     <div id="map"></div>
@@ -328,6 +470,125 @@
             </div>
         </div>
     </div>
+    
+    <!-- Modal for adding a new step -->
+    <div id="add-step-modal" class="modal">
+        <span class="modal-close">&times;</span>
+        <div class="modal-content">
+            <div class="modal-container">
+                <div class="modal-details">
+                    <h2>Add New Steps</h2>
+                    <p class="modal-subtitle">Add a new set of public steps to the Pittsburgh Steps Explorer</p>
+                    
+                    <form id="add-step-form">
+                        <div class="form-row">
+                            <label for="new-step-location">Location/Name*:</label>
+                            <input type="text" id="new-step-location" required placeholder="E.g., Forbes Ave Steps">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label>Position*:</label>
+                            <div class="coordinates-container">
+                                <div>
+                                    <label for="new-step-lat">Latitude:</label>
+                                    <input type="number" step="0.000001" id="new-step-lat" required>
+                                </div>
+                                <div>
+                                    <label for="new-step-lng">Longitude:</label>
+                                    <input type="number" step="0.000001" id="new-step-lng" required>
+                                </div>
+                            </div>
+                            <button type="button" id="pick-location-button" class="secondary-button">
+                                <i class="fas fa-map-marker-alt"></i> Pick on Map
+                            </button>
+                            <button type="button" id="use-my-location-button" class="secondary-button">
+                                <i class="fas fa-location-arrow"></i> Use My Location
+                            </button>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-from">From Street:</label>
+                            <input type="text" id="new-step-from" placeholder="Street at bottom of steps">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-to">To Street:</label>
+                            <input type="text" id="new-step-to" placeholder="Street at top of steps">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-count">Number of Steps:</label>
+                            <input type="number" id="new-step-count" min="1" placeholder="How many steps?">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-length">Length (feet):</label>
+                            <input type="number" id="new-step-length" min="0" step="0.1" placeholder="Approximate length">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-width">Width (feet):</label>
+                            <input type="number" id="new-step-width" min="0" step="0.1" placeholder="Approximate width">
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-neighborhood">Neighborhood:</label>
+                            <select id="new-step-neighborhood">
+                                <option value="">Select neighborhood (optional)</option>
+                                <!-- Neighborhoods will be populated dynamically -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-comments">Comments:</label>
+                            <textarea id="new-step-comments" rows="3" placeholder="Any additional information about these steps"></textarea>
+                        </div>
+                        
+                        <div class="form-row">
+                            <label for="new-step-photo">Upload Photo:</label>
+                            <input type="file" id="new-step-photo" accept="image/*" capture="environment">
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" id="cancel-add-step" class="cancel-button">Cancel</button>
+                            <button type="submit" id="submit-new-step" class="action-button">Add These Steps</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal for uploading a photo to existing steps -->
+    <div id="upload-photo-modal" class="modal">
+        <span class="modal-close">&times;</span>
+        <div class="modal-content">
+            <div class="modal-container">
+                <div class="modal-details">
+                    <h2>Upload Photo</h2>
+                    <p class="modal-subtitle">Add a photo to <span id="upload-step-name"></span></p>
+                    
+                    <form id="upload-photo-form">
+                        <input type="hidden" id="upload-step-id">
+                        
+                        <div class="form-row">
+                            <label for="upload-photo">Select or Take Photo:</label>
+                            <input type="file" id="upload-photo" accept="image/*" capture="environment" required>
+                        </div>
+                        
+                        <div id="upload-preview-container" style="display:none; margin: 15px 0;">
+                            <img id="upload-preview" style="max-width: 100%; max-height: 200px; border-radius: 4px;">
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="button" id="cancel-upload" class="cancel-button">Cancel</button>
+                            <button type="submit" id="submit-upload" class="action-button">Upload Photo</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <script>
         // Global variables
@@ -340,21 +601,51 @@
         let panorama;
         let userLocationMarker = null;
         let neighborhoods = new Set();
+        let tempMarker = null;
+        let isLocationPicking = false;
         const modal = document.getElementById('details-modal');
+        const addStepModal = document.getElementById('add-step-modal');
+        const uploadPhotoModal = document.getElementById('upload-photo-modal');
         const modalClose = document.querySelector('.modal-close');
         const controlsToggle = document.getElementById('controls-toggle');
         const controlsPanel = document.getElementById('controls-panel');
         
         // Close the modal when clicking the X
-        modalClose.addEventListener('click', function() {
-            modal.style.display = 'none';
+        document.querySelectorAll('.modal-close').forEach(closeBtn => {
+            closeBtn.addEventListener('click', function() {
+                document.querySelectorAll('.modal').forEach(m => {
+                    m.style.display = 'none';
+                });
+                
+                // Reset location picking mode if active
+                if (isLocationPicking) {
+                    isLocationPicking = false;
+                    map.setOptions({ draggableCursor: null });
+                    if (tempMarker) {
+                        tempMarker.setMap(null);
+                        tempMarker = null;
+                    }
+                }
+            });
         });
         
         // Close the modal when clicking outside of it
         window.addEventListener('click', function(event) {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
+            document.querySelectorAll('.modal').forEach(m => {
+                if (event.target === m) {
+                    m.style.display = 'none';
+                    
+                    // Reset location picking mode if active
+                    if (isLocationPicking) {
+                        isLocationPicking = false;
+                        map.setOptions({ draggableCursor: null });
+                        if (tempMarker) {
+                            tempMarker.setMap(null);
+                            tempMarker = null;
+                        }
+                    }
+                }
+            });
         });
         
         // Toggle controls panel on mobile
@@ -382,6 +673,9 @@
             // Photos filter
             document.getElementById('show-pictures-only').addEventListener('change', filterMarkers);
             
+            // User submitted filter
+            document.getElementById('show-user-submitted').addEventListener('change', filterMarkers);
+            
             // Clustering toggle
             document.getElementById('enable-clustering').addEventListener('change', function() {
                 toggleClustering(this.checked);
@@ -389,6 +683,55 @@
             
             // Find nearest steps button
             document.getElementById('find-nearest').addEventListener('click', findNearestSteps);
+            
+            // Add new step button
+            document.getElementById('add-new-step').addEventListener('click', function() {
+                showAddStepModal();
+            });
+            
+            // Add step form buttons
+            document.getElementById('pick-location-button').addEventListener('click', startLocationPicking);
+            document.getElementById('use-my-location-button').addEventListener('click', useMyLocationForNewStep);
+            document.getElementById('cancel-add-step').addEventListener('click', function() {
+                addStepModal.style.display = 'none';
+                
+                // Reset location picking mode if active
+                if (isLocationPicking) {
+                    isLocationPicking = false;
+                    map.setOptions({ draggableCursor: null });
+                    if (tempMarker) {
+                        tempMarker.setMap(null);
+                        tempMarker = null;
+                    }
+                }
+            });
+            
+            // Submit new step form
+            document.getElementById('add-step-form').addEventListener('submit', submitNewStep);
+            
+            // Upload photo form
+            document.getElementById('upload-photo-form').addEventListener('submit', submitPhotoUpload);
+            document.getElementById('cancel-upload').addEventListener('click', function() {
+                uploadPhotoModal.style.display = 'none';
+            });
+            
+            // Photo preview
+            document.getElementById('upload-photo').addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        document.getElementById('upload-preview').src = e.target.result;
+                        document.getElementById('upload-preview-container').style.display = 'block';
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+            
+            // New step photo preview
+            document.getElementById('new-step-photo').addEventListener('change', function(e) {
+                // Could add preview functionality here if needed
+            });
             
             // Check if geolocation is available
             if (navigator.geolocation) {
@@ -416,7 +759,19 @@
                 errorElement.style.display = 'none';
             }, 5000);
         }
-
+        
+        // Show success message
+        function showSuccess(message) {
+            const successElement = document.getElementById('success-message');
+            successElement.innerText = message;
+            successElement.style.display = 'block';
+            
+            // Hide after 3 seconds
+            setTimeout(() => {
+                successElement.style.display = 'none';
+            }, 3000);
+        }
+        
         // Load steps data from API
         async function loadStepsData() {
             try {
@@ -495,6 +850,8 @@
                         <p><b>To:</b> ${step.to_street || 'N/A'}</p>
                         <p><b>Steps:</b> ${step.steps_count || 'N/A'}</p>
                         <p><b>Length:</b> ${step.length_feet || 'N/A'} feet</p>
+                        <p><b>Width:</b> ${step.width || 'N/A'} feet</p>
+                        <p><b>Year Built:</b> ${step.year_built || 'N/A'}</p>
                         <button onclick="openDetailsModal(${step.id})" 
                                 style="margin-top: 10px; padding: 5px 10px; background-color: #0066cc; color: white; 
                                 border: none; border-radius: 4px; cursor: pointer;">
@@ -558,6 +915,7 @@
             const maxSteps = parseInt(document.getElementById('steps-range').value);
             const selectedNeighborhood = document.getElementById('neighborhood-filter').value;
             const clusteringEnabled = document.getElementById('enable-clustering').checked;
+            const showUserSubmitted = document.getElementById('show-user-submitted').checked;
             
             // Clear existing clusterer if it exists
             if (markerClusterer) {
@@ -581,6 +939,11 @@
                 
                 // Filter by neighborhood
                 if (selectedNeighborhood !== 'all' && stepData.neighborhood !== selectedNeighborhood) {
+                    visible = false;
+                }
+                
+                // Filter by user submitted
+                if (!showUserSubmitted && stepData.user_submitted) {
                     visible = false;
                 }
                 
@@ -742,9 +1105,15 @@
                 }
             }
             
+            // Add source indicator for user-submitted steps
+            const sourceInfo = step.user_submitted ? 
+                '<div class="detail-item"><div class="detail-label">Source:</div><div><span style="color: #FBBC05;"><i class="fas fa-user"></i> User contributed</span></div></div>' : '';
+            
             // Populate step details
             document.getElementById('modal-details').innerHTML = `
                 <h1 style="color: #0066cc; margin-top: 0;">${step.location || 'Pittsburgh Step'}</h1>
+                
+                ${sourceInfo}
                 
                 <div class="detail-item">
                     <div class="detail-label">Neighborhood:</div>
@@ -804,6 +1173,10 @@
                         : `<div style="background-color: #eee; color: #777; padding: 20px; text-align: center;">No image available</div>`
                     }
                 </div>
+                
+                <button id="add-photo-button" onclick="showUploadPhotoModal('${step.id}', '${step.location.replace(/'/g, "\\'")}')">
+                    <i class="fas fa-camera"></i> ${step.has_picture ? 'Add Another Photo' : 'Add a Photo'}
+                </button>
             `;
             
             // Initialize Street View
@@ -843,6 +1216,329 @@
                     '<div style="padding: 20px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5;">' +
                         '<p>Error loading Street View: ' + error.message + '</p>' +
                     '</div>';
+            }
+        }
+        
+        // Show upload photo modal
+        function showUploadPhotoModal(stepId, stepName) {
+            document.getElementById('upload-step-id').value = stepId;
+            document.getElementById('upload-step-name').textContent = stepName;
+            document.getElementById('upload-preview-container').style.display = 'none';
+            uploadPhotoModal.style.display = 'block';
+        }
+        
+        // Show add step modal
+        function showAddStepModal() {
+            addStepModal.style.display = 'block';
+        }
+        
+        // Start location picking mode
+        function startLocationPicking() {
+            isLocationPicking = true;
+            map.setOptions({ draggableCursor: 'crosshair' });
+            
+            // Add temporary marker
+            tempMarker = new google.maps.Marker({
+                map: map,
+                icon: {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    fillColor: '#4285F4',
+                    fillOpacity: 1,
+                    strokeColor: '#ffffff',
+                    strokeWeight: 2,
+                    scale: 7
+                },
+                zIndex: 1000
+            });
+            
+            // Add click event to map
+            map.addListener('click', function(event) {
+                const lat = event.latLng.lat();
+                const lng = event.latLng.lng();
+                
+                // Update temporary marker position
+                tempMarker.setPosition({ lat, lng });
+                
+                // Update form fields
+                document.getElementById('new-step-lat').value = lat.toFixed(6);
+                document.getElementById('new-step-lng').value = lng.toFixed(6);
+            });
+        }
+        
+        // Use my location for new step
+        function useMyLocationForNewStep() {
+            navigator.geolocation.getCurrentPosition(
+                // Success callback
+                function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // Update form fields
+                    document.getElementById('new-step-lat').value = lat.toFixed(6);
+                    document.getElementById('new-step-lng').value = lng.toFixed(6);
+                },
+                // Error callback
+                function(error) {
+                    switch(error.code) {
+                        case error.PERMISSION_DENIED:
+                            showError('Location access denied');
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            showError('Location information unavailable');
+                            break;
+                        case error.TIMEOUT:
+                            showError('Location request timed out');
+                            break;
+                        default:
+                            showError('Unknown location error');
+                            break;
+                    }
+                },
+                // Options
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+        
+        // Submit new step form
+        async function submitNewStep(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const location = document.getElementById('new-step-location').value;
+            const lat = parseFloat(document.getElementById('new-step-lat').value);
+            const lng = parseFloat(document.getElementById('new-step-lng').value);
+            const fromStreet = document.getElementById('new-step-from').value;
+            const toStreet = document.getElementById('new-step-to').value;
+            const stepsCount = parseInt(document.getElementById('new-step-count').value);
+            const lengthFeet = parseFloat(document.getElementById('new-step-length').value);
+            const widthFeet = parseFloat(document.getElementById('new-step-width').value);
+            const neighborhood = document.getElementById('new-step-neighborhood').value;
+            const comments = document.getElementById('new-step-comments').value;
+            const photo = document.getElementById('new-step-photo').files[0];
+            
+            // Validate form data
+            if (!location || !lat || !lng) {
+                showError('Please fill in all required fields');
+                return;
+            }
+            
+            // Create new step object
+            const newStep = {
+                location,
+                latitude: lat,
+                longitude: lng,
+                from_street: fromStreet,
+                to_street: toStreet,
+                steps_count: stepsCount,
+                length_feet: lengthFeet,
+                width: widthFeet,
+                neighborhood,
+                comment: comments,
+                user_submitted: true
+            };
+            
+            // Submit to API
+            try {
+                showLoading(true);
+                
+                // Create FormData for multipart/form-data request (for photo upload)
+                const formData = new FormData();
+                
+                // Add JSON data as a blob
+                formData.append('data', new Blob([JSON.stringify(newStep)], { 
+                    type: 'application/json' 
+                }));
+                
+                // Add photo if provided
+                if (photo) {
+                    formData.append('photo', photo);
+                }
+                
+                // Send request
+                const response = await fetch('/api/steps/add', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Add new step to local data
+                    steps.push(result.step);
+                    
+                    // Create marker for new step
+                    const stepMarker = new google.maps.Marker({
+                        position: { lat: result.step.latitude, lng: result.step.longitude },
+                        map: map,
+                        title: result.step.location,
+                        icon: createStepsIcon(result.step.has_picture)
+                    });
+                    
+                    // Add user-submitted class to marker
+                    stepMarker.setOptions({
+                        icon: {
+                            path: 'M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z M-6,-3 L-6,-1 L-2,-1 L-2,1 L2,1 L2,3 L6,3 L6,5',
+                            fillColor: '#FBBC05', // Yellow for user-submitted
+                            fillOpacity: 1,
+                            strokeColor: '#ffffff',
+                            strokeWeight: 1.5,
+                            scale: 1,
+                            anchor: new google.maps.Point(0, 0)
+                        }
+                    });
+                    
+                    // Store step data with marker
+                    stepMarker.stepData = result.step;
+                    
+                    // Add click event
+                    const content = `
+                        <div style="max-width: 300px;">
+                            <h3 style="margin-top: 5px; margin-bottom: 10px; color: #0066cc;">${result.step.location}</h3>
+                            <p><b>From:</b> ${result.step.from_street || 'N/A'}</p>
+                            <p><b>To:</b> ${result.step.to_street || 'N/A'}</p>
+                            <p><b>Steps:</b> ${result.step.steps_count || 'N/A'}</p>
+                            <p><b>Length:</b> ${result.step.length_feet || 'N/A'} feet</p>
+                            <button onclick="openDetailsModal(${result.step.id})" 
+                                    style="margin-top: 10px; padding: 5px 10px; background-color: #0066cc; color: white; 
+                                    border: none; border-radius: 4px; cursor: pointer;">
+                                View Details & Street View
+                            </button>
+                        </div>
+                    `;
+                    
+                    const infoWindow = new google.maps.InfoWindow({
+                        content: content,
+                        maxWidth: 300
+                    });
+                    
+                    stepMarker.addListener('click', () => {
+                        if (currentInfoWindow) {
+                            currentInfoWindow.close();
+                        }
+                        infoWindow.open(map, stepMarker);
+                        currentInfoWindow = infoWindow;
+                    });
+                    
+                    // Add to markers array
+                    markers.push(stepMarker);
+                    
+                    // Show success message
+                    showSuccess('New step added successfully!');
+                    
+                    // Close modal
+                    addStepModal.style.display = 'none';
+                    
+                    // Reset location picking mode if active
+                    if (isLocationPicking) {
+                        isLocationPicking = false;
+                        map.setOptions({ draggableCursor: null });
+                        if (tempMarker) {
+                            tempMarker.setMap(null);
+                            tempMarker = null;
+                        }
+                    }
+                    
+                    // Reset form
+                    document.getElementById('add-step-form').reset();
+                } else {
+                    throw new Error(result.error || 'Failed to add step');
+                }
+                
+                showLoading(false);
+            } catch (error) {
+                showLoading(false);
+                showError('Error adding step: ' + error.message);
+            }
+        }
+        
+        // Submit photo upload form
+        async function submitPhotoUpload(event) {
+            event.preventDefault();
+            
+            // Get form data
+            const stepId = document.getElementById('upload-step-id').value;
+            const photo = document.getElementById('upload-photo').files[0];
+            
+            // Validate form data
+            if (!stepId || !photo) {
+                showError('Please select a photo to upload');
+                return;
+            }
+            
+            // Upload photo
+            try {
+                showLoading(true);
+                
+                // Create FormData
+                const formData = new FormData();
+                formData.append('step_id', stepId);
+                formData.append('photo', photo);
+                
+                // Send request
+                const response = await fetch('/api/steps/upload-photo', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update step data in local array
+                    const step = steps.find(s => s.id == stepId);
+                    if (step) {
+                        step.has_picture = true;
+                        step.image_url = result.image_url;
+                        
+                        // Update marker icon if it exists
+                        const marker = markers.find(m => m.stepData.id == stepId);
+                        if (marker) {
+                            const iconColor = step.user_submitted ? '#FBBC05' : '#EA4335';
+                            marker.setIcon({
+                                path: 'M-10,0a10,10 0 1,0 20,0a10,10 0 1,0 -20,0z M-6,-3 L-6,-1 L-2,-1 L-2,1 L2,1 L2,3 L6,3 L6,5',
+                                fillColor: iconColor,
+                                fillOpacity: 1,
+                                strokeColor: '#ffffff',
+                                strokeWeight: 1.5,
+                                scale: 1,
+                                anchor: new google.maps.Point(0, 0)
+                            });
+                        }
+                    }
+                    
+                    // Show success message
+                    showSuccess('Photo uploaded successfully!');
+                    
+                    // Close modal
+                    uploadPhotoModal.style.display = 'none';
+                    
+                    // Reset form
+                    document.getElementById('upload-photo-form').reset();
+                    document.getElementById('upload-preview-container').style.display = 'none';
+                    
+                    // Refresh details modal if open
+                    if (modal.style.display === 'block') {
+                        openDetailsModal(stepId);
+                    }
+                } else {
+                    throw new Error(result.error || 'Failed to upload photo');
+                }
+                
+                showLoading(false);
+            } catch (error) {
+                showLoading(false);
+                showError('Error uploading photo: ' + error.message);
             }
         }
         
