@@ -124,6 +124,7 @@
             margin-right: 8px;
             border: 1px solid #ddd;
         }
+        /* Compact Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -133,208 +134,185 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.7);
+            overflow: auto;
         }
         .modal-content {
             background-color: white;
             margin: 10% auto;
-            width: 90%;
-            max-width: 900px;
+            width: 80%;
+            max-width: 750px;
             border-radius: 8px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
             overflow: hidden;
-        }
-        .modal-container {
             display: flex;
             flex-direction: column;
-        }
-        .modal-details {
-            padding: 20px;
-            max-height: 50vh;
-            overflow-y: auto;
-        }
-        .modal-street-view {
-            height: 40vh;
-            min-height: 300px;
-            border-top: 1px solid #ddd;
+            max-height: 80vh;
         }
         .modal-close {
-            color: #777;
+            color: #555;
             float: right;
-            font-size: 30px;
+            font-size: 24px;
             font-weight: bold;
             position: absolute;
-            right: 20px;
-            top: 10px;
+            right: 15px;
+            top: 8px;
             z-index: 2001;
+            transition: color 0.2s;
         }
         .modal-close:hover {
             color: #000;
             text-decoration: none;
             cursor: pointer;
         }
-        .detail-item {
-            margin-bottom: 10px;
-            display: flex;
-            flex-wrap: wrap;
+        .modal-header {
+            padding: 15px 15px 0;
+            position: relative;
         }
-        .detail-label {
-            font-weight: bold;
-            width: 120px;
-            margin-right: 10px;
-        }
-        .rating-stars {
-            display: inline-block;
-            margin-top: 5px;
-        }
-        .rating-stars i {
-            color: #ffd700;
-            margin-right: 2px;
-        }
-        .nearest-button {
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .nearest-button:hover {
-            background-color: #3367d6;
-        }
-        .nearest-button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        .nearest-button i {
-            margin-right: 5px;
-        }
-        .range-slider {
-            width: 100%;
-            margin: 10px 0;
-        }
-        .slider-values {
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #666;
-        }
-        .action-button {
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            font-weight: bold;
-        }
-        .action-button:hover {
-            background-color: #3367d6;
-        }
-        .secondary-button {
-            background-color: #f1f1f1;
-            color: #333;
-            border: 1px solid #ccc;
-            padding: 6px 12px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 5px;
-            width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .secondary-button:hover {
-            background-color: #e5e5e5;
-        }
-        .cancel-button {
-            background-color: #f1f1f1;
-            color: #333;
-            border: 1px solid #ccc;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .cancel-button:hover {
-            background-color: #e5e5e5;
-        }
-        .form-row {
-            margin-bottom: 15px;
-        }
-        .form-row label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .form-row input[type="text"],
-        .form-row input[type="number"],
-        .form-row select,
-        .form-row textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .form-actions {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 20px;
-        }
-        .coordinates-container {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-        .coordinates-container div {
-            flex: 1;
-        }
-        .coordinates-container label {
-            font-size: 12px;
-            font-weight: normal;
+        .modal-title {
+            color: #0066cc;
+            margin: 0 0 3px 0;
+            font-size: 22px;
+            padding-right: 25px;
         }
         .modal-subtitle {
             color: #666;
-            margin-top: 0;
-            margin-bottom: 20px;
-        }
-        .map-picking {
-            cursor: crosshair !important;
-        }
-        .user-contributed-marker {
-            position: relative;
-        }
-        .user-contributed-marker::after {
-            content: '★';
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            color: gold;
-            font-size: 12px;
-            text-shadow: 0 0 2px black;
-        }
-        #add-photo-button {
-            background-color: #4285F4;
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 15px;
-            display: inline-flex;
+            margin: 0 0 10px 0;
+            font-size: 14px;
+            display: flex;
             align-items: center;
         }
-        #add-photo-button i {
-            margin-right: 5px;
+        .modal-body {
+            display: flex;
+            flex-direction: row;
+            height: 350px;
+            max-height: calc(80vh - 60px);
         }
-        
+        .modal-details {
+            flex: 1;
+            padding: 0 15px 10px;
+            overflow-y: auto;
+        }
+        .modal-street-view {
+            flex: 1;
+            height: 100%;
+            border-left: 1px solid #eee;
+        }
+        .detail-section {
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        .detail-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .detail-item {
+            margin-bottom: 8px;
+        }
+        .detail-label {
+            font-weight: bold;
+            color: #666;
+            margin-bottom: 2px;
+            font-size: 13px;
+        }
+        .detail-value {
+            color: #333;
+            font-size: 13px;
+        }
+        .step-image {
+            margin: 6px 0;
+            max-width: 100%;
+            max-height: 150px;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .no-image {
+            background-color: #f5f5f5;
+            color: #777;
+            padding: 15px;
+            text-align: center;
+            border-radius: 4px;
+            margin: 6px 0;
+            font-size: 13px;
+        }
+        .rating-stars {
+            display: inline-flex;
+            align-items: center;
+            margin-top: 2px;
+        }
+        .rating-stars i {
+            color: #FFC107;
+            margin-right: 2px;
+            font-size: 14px;
+        }
+        .modal-actions {
+            padding: 10px 15px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #eee;
+            text-align: right;
+        }
+        .action-button {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.2s;
+        }
+        .action-button:hover {
+            background-color: #0055b3;
+        }
+        .action-button i {
+            margin-right: 6px;
+        }
+        .coordinates-box {
+            font-family: monospace;
+            background-color: #f8f9fa;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            display: inline-block;
+            border: 1px solid #eee;
+        }
+        .comment-box {
+            background-color: #f8f9fa;
+            padding: 10px;
+            border-radius: 4px;
+            margin-top: 6px;
+            font-style: italic;
+            border-left: 3px solid #ddd;
+            font-size: 13px;
+        }
+        .user-submitted-badge {
+            display: inline-flex;
+            align-items: center;
+            background-color: #FFF8E1;
+            color: #F57C00;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .user-submitted-badge i {
+            margin-right: 4px;
+            font-size: 11px;
+        }
         /* Mobile Responsiveness */
         @media (max-width: 768px) {
             .controls {
@@ -369,6 +347,131 @@
             .legend {
                 bottom: 20px;
             }
+        }
+        
+        .condition-rating {
+            display: flex;
+            align-items: center;
+            margin-top: 5px;
+        }
+        .condition-stars {
+            display: inline-flex;
+            margin-right: 10px;
+        }
+        .condition-stars i {
+            font-size: 20px;
+            color: #ddd;
+            cursor: pointer;
+            padding: 2px;
+        }
+        .condition-stars i.active {
+            color: #4CAF50;
+        }
+        .condition-stars i.hover {
+            color: #8BC34A;
+        }
+        .condition-label {
+            margin-left: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        .edit-mode input, .edit-mode textarea, .edit-mode select {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 8px;
+        }
+        .edit-mode textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+        .edit-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .edit-button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .cancel-edit-button {
+            background-color: #f1f1f1;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        .toggle-edit-button {
+            background-color: #FF9800;
+        }
+        
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .status-open {
+            background-color: #E8F5E9;
+            color: #388E3C;
+        }
+        .status-closed {
+            background-color: #FFEBEE;
+            color: #D32F2F;
+        }
+        .status-toggle {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+            margin: 0 10px;
+        }
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 16px;
+            width: 16px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .toggle-slider {
+            background-color: #4CAF50;
+        }
+        input:checked + .toggle-slider:before {
+            transform: translateX(26px);
         }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -420,8 +523,16 @@
                 <label for="enable-clustering">Group nearby steps</label>
             </div>
             <div>
-                <input type="checkbox" id="show-user-submitted">
-                <label for="show-user-submitted">Show user-submitted steps</label>
+                <input type="checkbox" id="user-submitted-filter">
+                <label for="user-submitted-filter">Show user-submitted steps</label>
+            </div>
+            <div>
+                <input type="checkbox" id="show-open-steps" checked>
+                <label for="show-open-steps">Show open steps</label>
+            </div>
+            <div>
+                <input type="checkbox" id="show-closed-steps" checked>
+                <label for="show-closed-steps">Show closed steps</label>
             </div>
         </div>
         
@@ -460,14 +571,15 @@
     <div id="details-modal" class="modal">
         <span class="modal-close">&times;</span>
         <div class="modal-content">
-            <div class="modal-container">
-                <div id="modal-details" class="modal-details">
-                    <!-- Step details will be loaded here -->
-                </div>
-                <div id="modal-street-view" class="modal-street-view">
-                    <!-- Street View will be loaded here -->
-                </div>
+            <div class="modal-header">
+                <h1 class="modal-title" id="modal-title"></h1>
+                <div class="modal-subtitle" id="modal-subtitle"></div>
             </div>
+            <div class="modal-body">
+                <div class="modal-details" id="modal-details"></div>
+                <div class="modal-street-view" id="modal-street-view"></div>
+            </div>
+            <div class="modal-actions" id="modal-actions"></div>
         </div>
     </div>
     
@@ -601,6 +713,7 @@
         let panorama;
         let userLocationMarker = null;
         let neighborhoods = new Set();
+        let neighborhoodsMap = {}; // Map of neighborhood IDs to names
         let tempMarker = null;
         let isLocationPicking = false;
         const modal = document.getElementById('details-modal');
@@ -674,7 +787,7 @@
             document.getElementById('show-pictures-only').addEventListener('change', filterMarkers);
             
             // User submitted filter
-            document.getElementById('show-user-submitted').addEventListener('change', filterMarkers);
+            document.getElementById('user-submitted-filter').addEventListener('change', filterMarkers);
             
             // Clustering toggle
             document.getElementById('enable-clustering').addEventListener('change', function() {
@@ -776,27 +889,51 @@
         async function loadStepsData() {
             try {
                 showLoading(true);
+                
+                // First, load neighborhood mapping
+                const neighborhoodResponse = await fetch('/api/neighborhoods');
+                if (!neighborhoodResponse.ok) {
+                    console.warn('Could not load neighborhood data');
+                } else {
+                    const neighborhoodData = await neighborhoodResponse.json();
+                    neighborhoodsMap = neighborhoodData.neighborhoods || {};
+                    console.log(`Loaded ${Object.keys(neighborhoodsMap).length} neighborhood mappings`);
+                }
+                
+                // Now load steps data
                 const response = await fetch('/api/steps');
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
                 
-                steps = await response.json();
+                const stepsData = await response.json();
+                if (!stepsData || !Array.isArray(stepsData)) {
+                    throw new Error('Invalid data format: steps data is not an array');
+                }
+                
+                steps = stepsData;
                 console.log(`Loaded ${steps.length} steps`);
                 
-                // Extract neighborhoods
+                // Extract unique neighborhoods for the filter
+                const neighborhoodSet = new Set();
                 steps.forEach(step => {
                     if (step.neighborhood && step.neighborhood.trim() !== '') {
-                        neighborhoods.add(step.neighborhood);
+                        neighborhoodSet.add(step.neighborhood);
                     }
                 });
                 
-                // Populate neighborhood dropdown
+                // Populate neighborhood dropdown with alphabetically sorted names
                 const neighborhoodSelect = document.getElementById('neighborhood-filter');
-                Array.from(neighborhoods).sort().forEach(hood => {
+                // Clear any existing options except the first one (All Neighborhoods)
+                while (neighborhoodSelect.options.length > 1) {
+                    neighborhoodSelect.remove(1);
+                }
+                
+                // Add sorted neighborhood options
+                Array.from(neighborhoodSet).sort().forEach(hood => {
                     const option = document.createElement('option');
                     option.value = hood;
-                    option.textContent = hood;
+                    option.textContent = neighborhoodsMap[hood] || hood;
                     neighborhoodSelect.appendChild(option);
                 });
                 
@@ -843,22 +980,7 @@
                 marker.stepData = step;
                 
                 // Create info window content
-                const content = `
-                    <div style="max-width: 300px;">
-                        <h3 style="margin-top: 5px; margin-bottom: 10px; color: #0066cc;">${step.location || 'Pittsburgh Step'}</h3>
-                        <p><b>From:</b> ${step.from_street || 'N/A'}</p>
-                        <p><b>To:</b> ${step.to_street || 'N/A'}</p>
-                        <p><b>Steps:</b> ${step.steps_count || 'N/A'}</p>
-                        <p><b>Length:</b> ${step.length_feet || 'N/A'} feet</p>
-                        <p><b>Width:</b> ${step.width || 'N/A'} feet</p>
-                        <p><b>Year Built:</b> ${step.year_built || 'N/A'}</p>
-                        <button onclick="openDetailsModal(${step.id})" 
-                                style="margin-top: 10px; padding: 5px 10px; background-color: #0066cc; color: white; 
-                                border: none; border-radius: 4px; cursor: pointer;">
-                            View Details & Street View
-                        </button>
-                    </div>
-                `;
+                const content = createMarkerContent(step);
                 
                 // Create info window
                 const infoWindow = new google.maps.InfoWindow({
@@ -882,6 +1004,31 @@
             // Apply initial filter
             filterMarkers();
             console.log(`Added ${markers.length} markers to map`);
+        }
+        
+        // Create marker info window content
+        function createMarkerContent(step) {
+            // Create status badge
+            const statusBadge = step.is_closed ? 
+                '<span style="background-color: #FFEBEE; color: #D32F2F; padding: 2px 5px; border-radius: 3px; font-size: 11px; margin-left: 5px;"><i class="fas fa-ban"></i> Closed</span>' : 
+                '<span style="background-color: #E8F5E9; color: #388E3C; padding: 2px 5px; border-radius: 3px; font-size: 11px; margin-left: 5px;"><i class="fas fa-check-circle"></i> Open</span>';
+                
+            return `
+                <div style="max-width: 300px;">
+                    <h3 style="margin-top: 5px; margin-bottom: 10px; color: #0066cc;">
+                        ${step.location || 'Pittsburgh Step'} ${statusBadge}
+                    </h3>
+                    <p><b>From:</b> ${step.from_street || 'N/A'}</p>
+                    <p><b>To:</b> ${step.to_street || 'N/A'}</p>
+                    <p><b>Steps:</b> ${step.steps_count || 'N/A'}</p>
+                    <p><b>Length:</b> ${step.length_feet || 'N/A'} feet</p>
+                    <button onclick="openDetailsModal(${step.id})" 
+                            style="margin-top: 10px; padding: 5px 10px; background-color: #0066cc; color: white; 
+                            border: none; border-radius: 4px; cursor: pointer;">
+                        View/Edit/Add Details and Street View
+                    </button>
+                </div>
+            `;
         }
         
         // Toggle marker clustering
@@ -915,7 +1062,9 @@
             const maxSteps = parseInt(document.getElementById('steps-range').value);
             const selectedNeighborhood = document.getElementById('neighborhood-filter').value;
             const clusteringEnabled = document.getElementById('enable-clustering').checked;
-            const showUserSubmitted = document.getElementById('show-user-submitted').checked;
+            const showUserSubmitted = document.getElementById('user-submitted-filter').checked;
+            const showOpenSteps = document.getElementById('show-open-steps').checked;
+            const showClosedSteps = document.getElementById('show-closed-steps').checked;
             
             // Clear existing clusterer if it exists
             if (markerCluster) {
@@ -944,6 +1093,12 @@
                 
                 // Filter by user submitted
                 if (!showUserSubmitted && stepData.user_submitted) {
+                    visible = false;
+                }
+                
+                // Filter by open/closed steps
+                const isClosed = stepData.is_closed === true;
+                if ((isClosed && !showClosedSteps) || (!isClosed && !showOpenSteps)) {
                     visible = false;
                 }
                 
@@ -1081,13 +1236,23 @@
             );
         }
         
-        // Open details modal
+        // Current step in the modal
+        let currentStep = null;
+        let isEditMode = false;
+        let currentConditionRating = 0;
+        
+        // Open details modal with edit functionality
         function openDetailsModal(stepId) {
             const step = steps.find(s => s.id == stepId);
             if (!step) {
                 showError('Step not found!');
                 return;
             }
+            
+            // Store current step
+            currentStep = step;
+            isEditMode = false;
+            currentConditionRating = step.condition_rating || 0;
             
             // Show the modal
             modal.style.display = 'block';
@@ -1105,81 +1270,329 @@
                 }
             }
             
-            // Add source indicator for user-submitted steps
-            const sourceInfo = step.user_submitted ? 
-                '<div class="detail-item"><div class="detail-label">Source:</div><div><span style="color: #FBBC05;"><i class="fas fa-user"></i> User contributed</span></div></div>' : '';
+            // Format user-submitted badge
+            const userBadge = step.user_submitted ? 
+                '<div class="user-submitted-badge"><i class="fas fa-user"></i> User</div>' : '';
             
-            // Populate step details
-            document.getElementById('modal-details').innerHTML = `
-                <h1 style="color: #0066cc; margin-top: 0;">${step.location || 'Pittsburgh Step'}</h1>
-                
-                ${sourceInfo}
-                
-                <div class="detail-item">
-                    <div class="detail-label">Neighborhood:</div>
-                    <div>${step.neighborhood || 'Unknown'}</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">From Street:</div>
-                    <div>${step.from_street || 'Unknown'}</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">To Street:</div>
-                    <div>${step.to_street || 'Unknown'}</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">Number of Steps:</div>
-                    <div>${step.steps_count || 'Unknown'}</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">Length:</div>
-                    <div>${step.length_feet || 'Unknown'} feet</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">Width:</div>
-                    <div>${step.width || 'Unknown'} feet</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">Year Built:</div>
-                    <div>${step.year_built || 'Unknown'}</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">Difficulty:</div>
-                    <div class="rating-stars">${difficultyStars}</div>
-                </div>
-                
-                <div class="detail-item">
-                    <div class="detail-label">Coordinates:</div>
-                    <div>Latitude: ${step.latitude.toFixed(6)}, Longitude: ${step.longitude.toFixed(6)}</div>
-                </div>
-                
-                ${step.comment ? `
-                <div class="detail-item">
-                    <div class="detail-label">Comments:</div>
-                    <div>${step.comment}</div>
-                </div>` : ''}
-                
-                <div class="detail-item">
-                    <div class="detail-label">Image:</div>
-                    ${step.has_picture 
-                        ? `<img src="${step.image_url}" alt="Step Image" style="max-width: 100%; border-radius: 4px; margin-top: 10px;">`
-                        : `<div style="background-color: #eee; color: #777; padding: 20px; text-align: center;">No image available</div>`
-                    }
-                </div>
-                
-                <button id="add-photo-button" onclick="showUploadPhotoModal('${step.id}', '${step.location.replace(/'/g, "\\'")}')">
-                    <i class="fas fa-camera"></i> ${step.has_picture ? 'Add Another Photo' : 'Add a Photo'}
-                </button>
-            `;
+            updateModalContent(step, difficultyStars, userBadge);
             
             // Initialize Street View
+            initStreetView(step);
+        }
+
+        // Update modal content based on view mode or edit mode
+        function updateModalContent(step, difficultyStars, userBadge) {
+            if (isEditMode) {
+                // Edit mode
+                document.getElementById('modal-details').innerHTML = `
+                    <div class="modal-header">
+                        <h1 class="modal-title">Edit: ${step.location || 'Pittsburgh Step'}</h1>
+                        <div class="modal-subtitle">
+                            <span>${step.neighborhood || 'Unknown Neighborhood'}</span>
+                            ${userBadge}
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section edit-mode">
+                        <h3 class="section-title">LOCATION & STATUS</h3>
+                        <div class="status-toggle">
+                            <span>Closed</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="step-status-toggle" ${!step.is_closed ? 'checked' : ''}>
+                                <span class="toggle-slider"></span>
+                            </label>
+                            <span>Open</span>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section edit-mode">
+                        <h3 class="section-title">CONDITION RATING</h3>
+                        <div class="condition-rating">
+                            <div class="condition-stars" id="condition-stars-container">
+                                ${generateConditionStars(currentConditionRating)}
+                            </div>
+                            <span class="condition-label" id="condition-label">${getConditionLabel(currentConditionRating)}</span>
+                        </div>
+                        <div class="detail-label" style="margin-top: 10px;">Notes</div>
+                        <textarea id="edit-comments" placeholder="Add notes about the condition of these steps">${step.comment || ''}</textarea>
+                    </div>
+                    
+                    <div class="edit-buttons">
+                        <button class="edit-button cancel-edit-button" onclick="toggleEditMode()">Cancel</button>
+                        <button class="edit-button" onclick="saveStepEdits()">Save Changes</button>
+                    </div>
+                `;
+                
+                // Add event listeners for condition rating stars
+                setupConditionRatingStars();
+            } else {
+                // View mode
+                // Create status badge
+                const statusBadge = step.is_closed ? 
+                    `<div class="status-badge status-closed"><i class="fas fa-ban"></i> Closed</div>` : 
+                    `<div class="status-badge status-open"><i class="fas fa-check-circle"></i> Open</div>`;
+                
+                document.getElementById('modal-details').innerHTML = `
+                    <div class="modal-header">
+                        <h1 class="modal-title">${step.location || 'Pittsburgh Step'}</h1>
+                        <div class="modal-subtitle">
+                            <span>${step.neighborhood || 'Unknown Neighborhood'}</span>
+                            ${userBadge}
+                            ${statusBadge}
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="section-title">LOCATION</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">From</div>
+                                <div class="detail-value">${step.from_street || 'Unknown'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">To</div>
+                                <div class="detail-value">${step.to_street || 'Unknown'}</div>
+                            </div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">Coordinates</div>
+                            <div class="detail-value">
+                                <div class="coordinates-box">
+                                    ${step.latitude.toFixed(6)}, ${step.longitude.toFixed(6)}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h3 class="section-title">DETAILS</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <div class="detail-label">Steps</div>
+                                <div class="detail-value">${step.steps_count || 'Unknown'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Width</div>
+                                <div class="detail-value">${step.width ? `${step.width} ft` : 'Unknown'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Length</div>
+                                <div class="detail-value">${step.length_feet ? `${step.length_feet} ft` : 'Unknown'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Year</div>
+                                <div class="detail-value">${step.year_built || 'Unknown'}</div>
+                            </div>
+                            <div class="detail-item">
+                                <div class="detail-label">Difficulty</div>
+                                <div class="detail-value">
+                                    <div class="rating-stars">${difficultyStars}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    ${step.condition_rating ? `
+                    <div class="detail-section">
+                        <h3 class="section-title">CONDITION</h3>
+                        <div class="condition-rating">
+                            <div class="condition-stars">
+                                ${generateConditionStars(step.condition_rating)}
+                            </div>
+                            <span class="condition-label">${getConditionLabel(step.condition_rating)}</span>
+                        </div>
+                    </div>` : ''}
+                    
+                    ${step.comment ? `
+                    <div class="detail-section">
+                        <h3 class="section-title">NOTES</h3>
+                        <div class="comment-box">${step.comment}</div>
+                    </div>` : ''}
+                    
+                    <div class="detail-section">
+                        <h3 class="section-title">IMAGE</h3>
+                        ${step.has_picture 
+                            ? `<img src="${step.image_url}" alt="Step Image" class="step-image">`
+                            : `<div class="no-image"><i class="far fa-image" style="font-size: 16px; margin-bottom: 6px;"></i><br>No image available</div>`
+                        }
+                    </div>
+                `;
+            }
+            
+            // Add action buttons
+            document.getElementById('modal-actions').innerHTML = `
+                <button id="toggle-edit-button" class="action-button toggle-edit-button" onclick="toggleEditMode()">
+                    <i class="fas fa-edit"></i> ${isEditMode ? 'Cancel Edit' : 'Edit Status & Condition'}
+                </button>
+                <button id="add-photo-button" class="action-button" onclick="showUploadPhotoModal('${step.id}', '${step.location.replace(/'/g, "\\'")}')">
+                    <i class="fas fa-camera"></i> ${step.has_picture ? 'Add Photo' : 'Add Photo'}
+                </button>
+            `;
+        }
+        
+        // Toggle between view and edit modes
+        function toggleEditMode() {
+            isEditMode = !isEditMode;
+            if (currentStep) {
+                const difficultyStars = calculateDifficultyStars(currentStep.steps_count || 0);
+                const userBadge = currentStep.user_submitted ? 
+                    '<div class="user-submitted-badge"><i class="fas fa-user"></i> User</div>' : '';
+                updateModalContent(currentStep, difficultyStars, userBadge);
+            }
+        }
+        
+        // Calculate difficulty stars HTML
+        function calculateDifficultyStars(stepsCount) {
+            let difficultyStars = '';
+            const difficulty = Math.min(5, Math.max(1, Math.ceil(stepsCount / 40)));
+            
+            for (let i = 0; i < 5; i++) {
+                if (i < difficulty) {
+                    difficultyStars += '<i class="fas fa-star"></i>';
+                } else {
+                    difficultyStars += '<i class="far fa-star"></i>';
+                }
+            }
+            return difficultyStars;
+        }
+        
+        // Generate condition rating stars
+        function generateConditionStars(rating) {
+            let starsHtml = '';
+            for (let i = 1; i <= 5; i++) {
+                starsHtml += `<i class="fas fa-star ${i <= rating ? 'active' : ''}" 
+                               data-rating="${i}" 
+                               ${isEditMode ? 'onclick="setConditionRating(' + i + ')"' : ''}></i>`;
+            }
+            return starsHtml;
+        }
+        
+        // Set up event handlers for condition rating stars
+        function setupConditionRatingStars() {
+            if (!isEditMode) return;
+            
+            const stars = document.querySelectorAll('#condition-stars-container i');
+            stars.forEach(star => {
+                star.addEventListener('click', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    setConditionRating(rating);
+                });
+                
+                star.addEventListener('mouseenter', function() {
+                    const rating = parseInt(this.getAttribute('data-rating'));
+                    highlightStars(rating);
+                });
+                
+                star.addEventListener('mouseleave', function() {
+                    resetStarHighlight();
+                });
+            });
+        }
+        
+        // Highlight stars on hover
+        function highlightStars(rating) {
+            const stars = document.querySelectorAll('#condition-stars-container i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('hover');
+                } else {
+                    star.classList.remove('hover');
+                }
+            });
+        }
+        
+        // Reset star highlighting
+        function resetStarHighlight() {
+            const stars = document.querySelectorAll('#condition-stars-container i');
+            stars.forEach(star => {
+                star.classList.remove('hover');
+            });
+        }
+        
+        // Set condition rating
+        function setConditionRating(rating) {
+            currentConditionRating = rating;
+            const stars = document.querySelectorAll('#condition-stars-container i');
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.add('active');
+                } else {
+                    star.classList.remove('active');
+                }
+            });
+            
+            // Update label
+            document.getElementById('condition-label').textContent = getConditionLabel(rating);
+        }
+        
+        // Get condition label
+        function getConditionLabel(rating) {
+            switch(rating) {
+                case 0: return 'Not Rated';
+                case 1: return 'Poor';
+                case 2: return 'Fair';
+                case 3: return 'Good';
+                case 4: return 'Very Good';
+                case 5: return 'Excellent';
+                default: return 'Not Rated';
+            }
+        }
+        
+        // Save step edits
+        function saveStepEdits() {
+            if (!currentStep) return;
+            
+            // Get values from form
+            const updatedStep = {
+                ...currentStep,
+                is_closed: !document.getElementById('step-status-toggle').checked,
+                comment: document.getElementById('edit-comments').value,
+                condition_rating: currentConditionRating,
+                last_updated: new Date().toISOString(),
+                condition_updated: new Date().toLocaleDateString()
+            };
+            
+            // Send to server
+            saveStepUpdates(updatedStep);
+        }
+        
+        // Send step updates to server
+        async function saveStepUpdates(step) {
+            try {
+                showLoading(true);
+                
+                const response = await fetch(`/api/steps/${step.id}/update`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(step)
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                
+                const result = await response.json();
+                
+                // Update the steps data and current step
+                const stepIndex = steps.findIndex(s => s.id === step.id);
+                if (stepIndex !== -1) {
+                    steps[stepIndex] = step;
+                    currentStep = step;
+                }
+                
+                showSuccess('Step information updated successfully!');
+                toggleEditMode(); // Return to view mode
+                showLoading(false);
+            } catch (error) {
+                showError('Failed to update step information: ' + error.message);
+                showLoading(false);
+            }
+        }
+        
+        // Initialize Street View
+        function initStreetView(step) {
             try {
                 if (!panorama) {
                     panorama = new google.maps.StreetViewPanorama(
@@ -1199,25 +1612,69 @@
                     streetViewService = new google.maps.StreetViewService();
                 }
                 
-                streetViewService.getPanorama(
-                    { location: { lat: step.latitude, lng: step.longitude }, radius: 50 },
-                    (data, status) => {
-                        if (status !== 'OK') {
-                            document.getElementById('modal-street-view').innerHTML = 
-                                '<div style="padding: 20px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5;">' +
-                                    '<p>Street View not available for this location</p>' +
-                                '</div>';
-                        }
+                streetViewService.getPanorama({ location: { lat: step.latitude, lng: step.longitude }, radius: 50 }, (data, status) => {
+                    if (status !== 'OK') {
+                        document.getElementById('modal-street-view').innerHTML = 
+                            `<div style="display: flex; justify-content: center; align-items: center; height: 100%; background-color: #f5f5f5;">
+                                <div style="text-align: center; padding: 15px;">
+                                    <i class="fas fa-map-marked-alt" style="font-size: 24px; color: #ccc; margin-bottom: 10px;"></i>
+                                    <p style="font-size: 13px;">Street View not available</p>
+                                </div>
+                            </div>`;
                     }
-                );
+                });
             } catch (error) {
-                console.error('Street View error:', error);
-                document.getElementById('modal-street-view').innerHTML = 
-                    '<div style="padding: 20px; text-align: center; height: 100%; display: flex; align-items: center; justify-content: center; background-color: #f5f5f5;">' +
-                        '<p>Error loading Street View: ' + error.message + '</p>' +
-                    '</div>';
+                console.error('Error initializing Street View:', error);
             }
         }
+        
+        // Initialize the map
+        function initMap() {
+            console.log('Map initialization started');
+            
+            try {
+                // Create a map centered on Pittsburgh
+                map = new google.maps.Map(document.getElementById('map'), {
+                    center: { lat: 40.4406, lng: -79.9959 },
+                    zoom: 13
+                });
+                
+                // Load steps data
+                loadStepsData();
+                
+                // Initialize filters
+                initFilters();
+                
+                console.log('Map initialized successfully');
+            } catch (error) {
+                showError('Error initializing map: ' + error.message);
+                console.error('Map initialization error:', error);
+                showLoading(false);
+            }
+        }
+        
+        // Load Google Maps API
+        function loadGoogleMapsScript() {
+            console.log("Loading Google Maps with API key"); // Debug
+            const script = document.createElement('script');
+            // Create the URL with the key directly to avoid any template escaping issues
+            const apiKey = "{{ api_key }}";
+            console.log("API Key being used:", apiKey); // Debug log
+            script.src = "https://maps.googleapis.com/maps/api/js?key=" + apiKey + "&libraries=geometry&callback=initMap";
+            script.async = true;
+            script.defer = true;
+            script.onerror = (e) => {
+                console.error("Google Maps API failed to load:", e);
+                showError('Failed to load Google Maps API');
+            };
+            document.head.appendChild(script);
+        }
+        
+        // Initialize when the page loads
+        window.onload = loadGoogleMapsScript;
+        
+        // Make openDetailsModal available globally
+        window.openDetailsModal = openDetailsModal;
         
         // Show upload photo modal
         function showUploadPhotoModal(stepId, stepName) {
@@ -1338,7 +1795,8 @@
                 width: widthFeet,
                 neighborhood,
                 comment: comments,
-                user_submitted: true
+                user_submitted: true,
+                is_closed: false
             };
             
             // Submit to API
@@ -1399,20 +1857,7 @@
                     stepMarker.stepData = result.step;
                     
                     // Add click event
-                    const content = `
-                        <div style="max-width: 300px;">
-                            <h3 style="margin-top: 5px; margin-bottom: 10px; color: #0066cc;">${result.step.location}</h3>
-                            <p><b>From:</b> ${result.step.from_street || 'N/A'}</p>
-                            <p><b>To:</b> ${result.step.to_street || 'N/A'}</p>
-                            <p><b>Steps:</b> ${result.step.steps_count || 'N/A'}</p>
-                            <p><b>Length:</b> ${result.step.length_feet || 'N/A'} feet</p>
-                            <button onclick="openDetailsModal(${result.step.id})" 
-                                    style="margin-top: 10px; padding: 5px 10px; background-color: #0066cc; color: white; 
-                                    border: none; border-radius: 4px; cursor: pointer;">
-                                View Details & Street View
-                            </button>
-                        </div>
-                    `;
+                    const content = createMarkerContent(result.step);
                     
                     const infoWindow = new google.maps.InfoWindow({
                         content: content,
@@ -1541,54 +1986,6 @@
                 showError('Error uploading photo: ' + error.message);
             }
         }
-        
-        // Initialize the map
-        function initMap() {
-            console.log('Map initialization started');
-            
-            try {
-                // Create a map centered on Pittsburgh
-                map = new google.maps.Map(document.getElementById('map'), {
-                    center: { lat: 40.4406, lng: -79.9959 },
-                    zoom: 13
-                });
-                
-                // Load steps data
-                loadStepsData();
-                
-                // Initialize filters
-                initFilters();
-                
-                console.log('Map initialized successfully');
-            } catch (error) {
-                showError('Error initializing map: ' + error.message);
-                console.error('Map initialization error:', error);
-                showLoading(false);
-            }
-        }
-        
-        // Load Google Maps API
-        function loadGoogleMapsScript() {
-            console.log("Loading Google Maps with API key"); // Debug
-            const script = document.createElement('script');
-            // Create the URL with the key directly to avoid any template escaping issues
-            const apiKey = "{{ api_key }}";
-            console.log("API Key being used:", apiKey); // Debug log
-            script.src = "https://maps.googleapis.com/maps/api/js?key=" + apiKey + "&libraries=geometry&callback=initMap";
-            script.async = true;
-            script.defer = true;
-            script.onerror = (e) => {
-                console.error("Google Maps API failed to load:", e);
-                showError('Failed to load Google Maps API');
-            };
-            document.head.appendChild(script);
-        }
-        
-        // Initialize when the page loads
-        window.onload = loadGoogleMapsScript;
-        
-        // Make openDetailsModal available globally
-        window.openDetailsModal = openDetailsModal;
     </script>
 </body>
 </html>

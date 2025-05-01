@@ -29,9 +29,10 @@ if not app.config['USE_CLOUD_STORAGE']:
 
 GEOJSON_FILE = 'Pittsburgh_Steps.geojson'
 USER_CONTRIBUTIONS_FILE = 'user_contributions.json'
+NEIGHBORHOOD_DATA_FILE = 'neighborhood_data.json'
 
 # Configure logging
-logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Initialize GCS client for cloud storage
@@ -40,7 +41,17 @@ if app.config['USE_CLOUD_STORAGE']:
     try:
         storage_client = storage.Client()
     except Exception as e:
-        logger.error(f"Error initializing Google Cloud Storage client: {e}")
+        logger.error(f"Failed to initialize Google Cloud Storage client: {e}")
+
+# Load neighborhood data
+neighborhood_map = {}
+try:
+    with open(NEIGHBORHOOD_DATA_FILE, 'r') as f:
+        neighborhood_data = json.load(f)
+        neighborhood_map = neighborhood_data.get('neighborhoods', {})
+    logger.info(f"Loaded {len(neighborhood_map)} neighborhoods from {NEIGHBORHOOD_DATA_FILE}")
+except Exception as e:
+    logger.error(f"Error loading neighborhood data: {e}")
 
 # Initialize rate limiter
 limiter = Limiter(
@@ -166,6 +177,10 @@ def load_steps_data():
                     else:
                         image_url = '/static/images/no_image.jpg'
                     
+                    # Get neighborhood value and replace with name if it's a number
+                    hood_value = str(properties.get('hood', ''))
+                    neighborhood_name = neighborhood_map.get(hood_value, hood_value)
+                    
                     step = {
                         'id': step_id,
                         'location': str(properties.get('location', '')),
@@ -178,12 +193,14 @@ def load_steps_data():
                         'comment': str(properties.get('comment', '')).strip(),
                         'style': int(properties.get('style', 0) or 0),
                         'segments': int(properties.get('segs', 0) or 0),
-                        'neighborhood': str(properties.get('hood', '')),
+                        'neighborhood': neighborhood_name,
+                        'hood_id': hood_value,  # Keep original ID for filtering
                         'has_picture': has_picture,
                         'image_url': image_url,
                         'latitude': latitude,
                         'longitude': longitude,
-                        'user_submitted': False
+                        'user_submitted': False,
+                        'is_closed': False
                     }
                     steps_data.append(step)
                 except Exception as e:
@@ -366,7 +383,8 @@ def add_step():
             'latitude': float(data.get('latitude')),
             'longitude': float(data.get('longitude')),
             'user_submitted': True,
-            'submit_date': datetime.now().isoformat()
+            'submit_date': datetime.now().isoformat(),
+            'is_closed': False
         }
         
         # Save to user contributions file
@@ -437,6 +455,112 @@ def add_step():
     except Exception as e:
         logger.exception(f"Error adding new step: {e}", exc_info=True)
         return jsonify({"error": str(e)}), 500
+
+@app.route('/api/steps/<step_id>/update', methods=['POST'])
+@limiter.limit("10/minute", key_func=get_remote_address)
+def update_step(step_id):
+    """Update an existing step with new details and condition rating"""
+    try:
+        # Get request JSON data
+        data = request.json
+        if not data:
+            return jsonify({"error": "No data provided"}), 400
+        
+        # Load current steps data
+        steps_data = load_steps_data()
+        step_index = None
+        
+        # Find the step to update
+        for i, step in enumerate(steps_data):
+            if str(step.get('id')) == str(step_id):
+                step_index = i
+                break
+        
+        if step_index is None:
+            return jsonify({"error": f"Step with ID {step_id} not found"}), 404
+            
+        # Update step data with new values
+        original_step = steps_data[step_index]
+        
+        # Fields that can be updated
+        updateable_fields = [
+            'from_street', 'to_street', 'steps_count', 'width',
+            'length_feet', 'year_built', 'comment', 'condition_rating',
+            'last_updated', 'condition_updated', 'is_closed'
+        ]
+        
+        # Update only allowed fields
+        for field in updateable_fields:
+            if field in data:
+                steps_data[step_index][field] = data[field]
+                
+        # If this is a user-submitted step, update the user contributions file
+        if original_step.get('user_submitted', False):
+            updated_user_steps = []
+            
+            if os.path.exists(USER_CONTRIBUTIONS_FILE):
+                with open(USER_CONTRIBUTIONS_FILE, 'r') as f:
+                    user_steps = json.load(f)
+                
+                for i, step in enumerate(user_steps):
+                    if str(step.get('id')) == str(step_id):
+                        for field in updateable_fields:
+                            if field in data:
+                                user_steps[i][field] = data[field]
+                    updated_user_steps.append(step)
+                    
+                with open(USER_CONTRIBUTIONS_FILE, 'w') as f:
+                    json.dump(updated_user_steps, f)
+        
+        # If condition rating has been added, log this as a data point
+        if 'condition_rating' in data:
+            try:
+                # Log condition rating in a separate file for analysis
+                condition_data = {
+                    'step_id': step_id,
+                    'rating': data['condition_rating'],
+                    'timestamp': datetime.now().isoformat(),
+                    'ip': request.remote_addr,
+                    'comment': data.get('comment', '')
+                }
+                
+                condition_log_file = 'condition_ratings.json'
+                condition_ratings = []
+                
+                if os.path.exists(condition_log_file):
+                    with open(condition_log_file, 'r') as f:
+                        condition_ratings = json.load(f)
+                
+                condition_ratings.append(condition_data)
+                
+                with open(condition_log_file, 'w') as f:
+                    json.dump(condition_ratings, f)
+                    
+                logger.info(f"Condition rating {data['condition_rating']} added for step {step_id}")
+            except Exception as e:
+                logger.error(f"Error logging condition rating: {str(e)}")
+                # Continue even if logging fails
+                pass
+                
+        return jsonify({
+            "success": True,
+            "message": "Step updated successfully",
+            "step": steps_data[step_index]
+        })
+    except Exception as e:
+        logger.exception(f"Error updating step: {e}", exc_info=True)
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/api/neighborhoods')
+def get_neighborhoods():
+    """Returns a list of all neighborhoods"""
+    try:
+        return jsonify({
+            'neighborhoods': neighborhood_map
+        })
+    except Exception as e:
+        logger.exception(f"Error getting neighborhoods: {e}")
+        return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     # Gunicorn will run the app, so this is only for local development
