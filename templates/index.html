@@ -595,7 +595,7 @@
         let map;
         let markers = [];
         let steps = [];
-        let markerClusterer = null;
+        let markerCluster = null;
         let currentInfoWindow = null;
         let streetViewService;
         let panorama;
@@ -886,25 +886,25 @@
         
         // Toggle marker clustering
         function toggleClustering(enable) {
-            // Clear existing clusterer if it exists
-            if (markerClusterer) {
-                markerClusterer.clearMarkers();
-                markerClusterer = null;
-            }
-            
-            // Apply filtering first
-            filterMarkers();
-            
-            // Create new clusterer if enabled
             if (enable) {
-                // Get only visible markers
-                const visibleMarkers = markers.filter(m => m.getMap() !== null);
+                // If clustering doesn't exist yet, initialize it
+                if (!markerCluster) {
+                    // Instead of loading MarkerClusterer from CDN, use Google Maps built-in clustering
+                    const markersArray = [...markers]; // Convert to array if needed
+                    markerCluster = new google.maps.MarkerClusterer(map, markersArray, {
+                        imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'
+                    });
+                }
+            } else if (markerCluster) {
+                // Clear the clustering if it exists
+                markerCluster.clearMarkers();
+                markerCluster = null;
                 
-                // Create clusterer
-                markerClusterer = new MarkerClusterer(map, visibleMarkers, {
-                    imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
-                    maxZoom: 15,
-                    gridSize: 50
+                // Make sure all markers are visible on the map
+                markers.forEach(marker => {
+                    if (!marker.getMap()) {
+                        marker.setMap(map);
+                    }
                 });
             }
         }
@@ -918,9 +918,9 @@
             const showUserSubmitted = document.getElementById('show-user-submitted').checked;
             
             // Clear existing clusterer if it exists
-            if (markerClusterer) {
-                markerClusterer.clearMarkers();
-                markerClusterer = null;
+            if (markerCluster) {
+                markerCluster.clearMarkers();
+                markerCluster = null;
             }
             
             markers.forEach(marker => {
@@ -957,7 +957,7 @@
                 const visibleMarkers = markers.filter(m => m.getMap() !== null);
                 
                 // Create clusterer
-                markerClusterer = new MarkerClusterer(map, visibleMarkers, {
+                markerCluster = new google.maps.MarkerClusterer(map, visibleMarkers, {
                     imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m',
                     maxZoom: 15,
                     gridSize: 50
@@ -1569,18 +1569,19 @@
         
         // Load Google Maps API
         function loadGoogleMapsScript() {
+            console.log("Loading Google Maps with API key"); // Debug
             const script = document.createElement('script');
-            script.src = `https://maps.googleapis.com/maps/api/js?key={{ api_key }}&libraries=geometry&callback=initMap&loading=async`;
+            // Create the URL with the key directly to avoid any template escaping issues
+            const apiKey = "{{ api_key }}";
+            console.log("API Key being used:", apiKey); // Debug log
+            script.src = "https://maps.googleapis.com/maps/api/js?key=" + apiKey + "&libraries=geometry&callback=initMap";
             script.async = true;
             script.defer = true;
-            script.onerror = () => showError('Failed to load Google Maps API');
+            script.onerror = (e) => {
+                console.error("Google Maps API failed to load:", e);
+                showError('Failed to load Google Maps API');
+            };
             document.head.appendChild(script);
-            
-            // Load MarkerClusterer library
-            const clusterScript = document.createElement('script');
-            clusterScript.src = 'https://unpkg.com/@googlemaps/markerclusterer/dist/index.min.js';
-            clusterScript.async = true;
-            document.head.appendChild(clusterScript);
         }
         
         // Initialize when the page loads

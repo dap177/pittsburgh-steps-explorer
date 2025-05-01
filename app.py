@@ -12,6 +12,10 @@ from flask_limiter.util import get_remote_address
 
 load_dotenv()
 
+# Load Google Maps API Key early and print for debugging
+GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
+print(f"Loaded Google Maps API Key: {GOOGLE_MAPS_API_KEY}")
+
 app = Flask(__name__, static_folder='static')
 app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB max upload size
 app.config['UPLOAD_FOLDER'] = os.path.join(app.static_folder, 'images', 'user_uploads')
@@ -23,7 +27,6 @@ app.config['USE_CLOUD_STORAGE'] = os.environ.get('GAE_ENV', '').startswith('stan
 if not app.config['USE_CLOUD_STORAGE']:
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
-GOOGLE_MAPS_API_KEY = os.getenv('GOOGLE_MAPS_API_KEY')
 GEOJSON_FILE = 'Pittsburgh_Steps.geojson'
 USER_CONTRIBUTIONS_FILE = 'user_contributions.json'
 
@@ -208,6 +211,8 @@ def load_steps_data():
 
 @app.route('/')
 def index():
+    # Explicitly log the API key being used in the template
+    logging.info(f"Using Google Maps API Key in template: {GOOGLE_MAPS_API_KEY}")
     return render_template('index.html', api_key=GOOGLE_MAPS_API_KEY)
 
 @app.route('/static/<path:path>')
